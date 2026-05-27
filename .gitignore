@@ -2,3 +2,4 @@ node_modules/
 tmp/
 memory/
 .DS_Store
+!fd-mobile-prototype/standalone.html

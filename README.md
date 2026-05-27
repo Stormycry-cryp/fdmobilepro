@@ -2,7 +2,7 @@
 
 FD+ Mobile Prototype is an independent React mobile interaction prototype for the FD+ v1 mobile entry point.
 
-The prototype focuses on the closed loop of conversational generation, official templates, generated results, works management, reuse, and deduction visibility. It does not include the flow chart inside the app UI.
+The prototype focuses on the closed loop of conversational generation, generated results, works management, reuse, and generation record visibility. It does not include the flow chart inside the app UI.
 
 ## Project
 
@@ -16,12 +16,12 @@ The prototype focuses on the closed loop of conversational generation, official 
 Included:
 
 - Logged-out intro, login/register, and onboarding
-- Home first screen and template expansion path
-- Unified composer with upload, model, config, template, continuous conversation, and send controls
+- Home first screen, second-floor category expansion, and works gallery reuse
+- Unified composer with upload, model, config, continuous conversation switch, and send controls
 - Design result stream for image and video tasks
 - Image detail and video detail
-- Works gallery, official templates, mine page, and deduction management
-- Upload, gallery, model, config, template, generation, action, and delete confirmation states
+- Works gallery, mine page, and generation records
+- Upload, gallery, model, config, action, and delete confirmation states
 
 Not included:
 
@@ -50,5 +50,5 @@ The static `index.html` loads the built files from `dist/assets/`.
 Verified on 2026-05-27:
 
 - `pnpm run build`
-- Browser automation through login, onboarding, home, model/config drawers, generation, design result stream, image detail, works, official templates, and deduction management
+- Browser automation through login, onboarding, home, second floor, model/config drawers, generation, design result stream, image detail, works, and generation records
 - Search confirmed no flow-chart code or copy remains inside `fd-mobile-prototype/`

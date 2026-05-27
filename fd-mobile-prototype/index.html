@@ -8,6 +8,24 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (() => {
+        const fitPhoneToViewport = () => {
+          const rawWidth = 403;
+          const rawHeight = 836;
+          const marginY = window.innerWidth <= 900 ? 18 : 28;
+          const marginX = window.innerWidth <= 900 ? 20 : 360;
+          const scale = Math.min(
+            1,
+            Math.max(0.72, (window.innerHeight - marginY) / rawHeight),
+            Math.max(0.72, (window.innerWidth - marginX) / rawWidth),
+          );
+          document.documentElement.style.setProperty("--phone-scale", scale.toFixed(4));
+        };
+        fitPhoneToViewport();
+        window.addEventListener("resize", fitPhoneToViewport);
+      })();
+    </script>
     <script type="module" src="./dist/assets/main.js"></script>
   </body>
 </html>

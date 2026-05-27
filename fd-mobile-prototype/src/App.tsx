@@ -92,24 +92,12 @@ type Page =
   | "design"
   | "mine"
   | "works"
-  | "templates"
   | "imageDetail"
   | "videoDetail"
   | "billing";
 
-type Drawer = "upload" | "gallery" | "model" | "config" | "template" | "workActions" | "generation" | null;
+type Drawer = "upload" | "gallery" | "model" | "config" | "workActions" | null;
 type MediaType = "image" | "video";
-
-interface TemplateItem {
-  id: string;
-  title: string;
-  category: string;
-  media: MediaType;
-  scene: string;
-  prompt: string;
-  ratio: string;
-  resolution: string;
-}
 
 interface WorkItem {
   id: string;
@@ -150,69 +138,6 @@ function defaultConfigFor(type: MediaType): GenerationConfig {
 }
 
 const templateCategories = ["热门", "视频", "商拍精修", "款式修改", "图案设计", "线稿设计", "商品详情"];
-
-const templates: TemplateItem[] = [
-  {
-    id: "tpl-1",
-    title: "白底商拍精修",
-    category: "商拍精修",
-    media: "image",
-    scene: "电商主图",
-    prompt: "把参考服装处理成干净白底棚拍效果，保留版型和面料纹理，光线柔和。",
-    ratio: "3:4",
-    resolution: "2K",
-  },
-  {
-    id: "tpl-2",
-    title: "走秀短视频",
-    category: "视频",
-    media: "video",
-    scene: "动态展示",
-    prompt: "让模特穿着参考服装自然走秀，镜头稳定，突出服装摆动和廓形。",
-    ratio: "9:16",
-    resolution: "1080p",
-  },
-  {
-    id: "tpl-3",
-    title: "印花换款",
-    category: "图案设计",
-    media: "image",
-    scene: "图案延展",
-    prompt: "在不改变衣服版型的前提下，为连衣裙替换成清爽植物印花。",
-    ratio: "3:4",
-    resolution: "2K",
-  },
-  {
-    id: "tpl-4",
-    title: "线稿成款",
-    category: "线稿设计",
-    media: "image",
-    scene: "设计草图",
-    prompt: "根据线稿生成成衣效果，补充真实面料、缝线和自然阴影。",
-    ratio: "1:1",
-    resolution: "2K",
-  },
-  {
-    id: "tpl-5",
-    title: "商品详情氛围图",
-    category: "商品详情",
-    media: "image",
-    scene: "详情页素材",
-    prompt: "生成适合商品详情页的服装细节场景图，突出领口、袖口和面料质感。",
-    ratio: "4:3",
-    resolution: "4K",
-  },
-  {
-    id: "tpl-6",
-    title: "短外套改长款",
-    category: "款式修改",
-    media: "image",
-    scene: "版型调整",
-    prompt: "将参考短外套改成长款廓形，保持原有面料和纽扣设计。",
-    ratio: "3:4",
-    resolution: "2K",
-  },
-];
 
 const works: WorkItem[] = [
   {
@@ -289,13 +214,6 @@ const initialTasks: ResultTask[] = [
   },
 ];
 
-const quickScenes = [
-  { title: "商拍精修", body: "白底、电商主图、质感增强" },
-  { title: "款式修改", body: "改领型、袖型、长短和廓形" },
-  { title: "图案设计", body: "印花、绣花、局部图案延展" },
-  { title: "视频生成", body: "走秀、细节展示、上身动态" },
-];
-
 function App() {
   const [page, setPage] = useState<Page>("login");
   const [previousPage, setPreviousPage] = useState<Page>("home");
@@ -304,30 +222,22 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("热门");
   const [mediaFilter, setMediaFilter] = useState<"全部" | "图片" | "视频">("全部");
   const [workFilter, setWorkFilter] = useState("全部");
-  const [templateFilter, setTemplateFilter] = useState("热门");
   const [continuous, setContinuous] = useState(false);
   const [modelType, setModelType] = useState<MediaType>("image");
   const [model, setModel] = useState("FD+3.0 图片");
   const [config, setConfig] = useState<GenerationConfig>(defaultConfigFor("image"));
-  const [selectedAssets, setSelectedAssets] = useState<string[]>(["g1"]);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<ResultTask[]>(initialTasks);
   const [selectedWork, setSelectedWork] = useState<WorkItem>(works[0]);
   const [selectedTask, setSelectedTask] = useState<ResultTask>(initialTasks[0]);
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const [generationState, setGenerationState] = useState<"idle" | "running" | "done">("idle");
   const [toast, setToast] = useState("");
 
-  const visibleTemplates = useMemo(() => {
-    if (templateFilter === "热门") return templates.slice(0, 4);
-    if (templateFilter === "图片") return templates.filter(item => item.media === "image");
-    if (templateFilter === "视频") return templates.filter(item => item.media === "video");
-    return templates.filter(item => item.category === templateFilter);
-  }, [templateFilter]);
-
   const visibleTasks = useMemo(() => {
-    if (mediaFilter === "图片") return initialTasks.filter(item => item.media === "image");
-    if (mediaFilter === "视频") return initialTasks.filter(item => item.media === "video");
-    return initialTasks;
-  }, [mediaFilter]);
+    if (mediaFilter === "图片") return tasks.filter(item => item.media === "image");
+    if (mediaFilter === "视频") return tasks.filter(item => item.media === "video");
+    return tasks;
+  }, [mediaFilter, tasks]);
 
   const visibleWorks = useMemo(() => {
     if (workFilter === "收藏") return works.filter(item => item.favorite);
@@ -346,7 +256,7 @@ function App() {
     if (page === "intro") return setPage("login");
     if (page === "guide") return setPage("login");
     if (page === "loft") return setPage("home");
-    if (["works", "templates", "billing"].includes(page)) return setPage("mine");
+    if (["works", "billing"].includes(page)) return setPage("mine");
     if (["imageDetail", "videoDetail"].includes(page)) return setPage(previousPage === "works" ? "works" : "design");
     setPage("home");
   };
@@ -357,31 +267,31 @@ function App() {
     setConfig(defaultConfigFor(type));
   };
 
-  const applyTemplate = (template: TemplateItem, run = false) => {
-    setPrompt(template.prompt);
-    setModelType(template.media);
-    setModel(template.media === "video" ? "Seedance 2.0" : "FD+3.0 图片");
-    setConfig({
-      ...defaultConfigFor(template.media),
-      createType: template.media === "video" ? "视频" : "图片",
-      ratio: template.ratio,
-      resolution: template.resolution,
-      batch: template.media === "video" ? "1 条" : "2 张",
-    });
-    setDrawer(null);
-    setToast(`已应用「${template.title}」`);
-    if (run) startGeneration();
-  };
-
   const startGeneration = () => {
-    setGenerationState("running");
-    setDrawer("generation");
+    const media = modelType;
+    const id = `r${Date.now()}`;
+    const nextTask: ResultTask = {
+      id,
+      title: prompt.trim() ? prompt.trim().slice(0, 16) : media === "video" ? "生成视频任务" : "生成图片任务",
+      media,
+      prompt: prompt.trim() || "根据当前参考图生成服装视觉",
+      model,
+      ratio: config.ratio,
+      resolution: config.resolution,
+      batch: config.batch,
+      duration: media === "video" ? config.duration : undefined,
+      status: "running",
+      hasReference: selectedAssets.length > 0,
+    };
+    setDrawer(null);
+    setTasks(current => [nextTask, ...current]);
+    setSelectedTask(nextTask);
+    setPage("design");
+    setToast("生成任务已进入设计页");
     window.setTimeout(() => {
-      setGenerationState("done");
-      setDrawer(null);
-      setPage("design");
-      setToast("生成任务已进入设计页");
-    }, 1200);
+      setTasks(current => current.map(task => task.id === id ? { ...task, status: "success" } : task));
+      setSelectedTask(current => current.id === id ? { ...current, status: "success" } : current);
+    }, 1800);
   };
 
   const openDetailFromTask = (task: ResultTask) => {
@@ -427,6 +337,21 @@ function App() {
     setPage("design");
   };
 
+  const fillFromWork = (work: WorkItem) => {
+    setPrompt(work.prompt);
+    setSelectedAssets([work.id]);
+    setModelType(work.media);
+    setModel(work.media === "video" ? "Seedance 2.0" : "FD+3.0 图片");
+    setConfig({
+      ...defaultConfigFor(work.media),
+      createType: work.media === "video" ? "视频" : "图片",
+      ratio: work.media === "video" ? "9:16" : "3:4",
+      resolution: work.media === "video" ? "1080p" : "2K",
+      batch: work.media === "video" ? "1 条" : "2 张",
+    });
+    setToast(`已填入「${work.title}」的参考图和提示词`);
+  };
+
   return (
     <main className="prototype-shell">
       <aside className="review-panel">
@@ -442,8 +367,7 @@ function App() {
             ["首页", "home"],
             ["设计", "design"],
             ["作品", "works"],
-            ["模版", "templates"],
-            ["扣款", "billing"],
+            ["生成记录", "billing"],
           ].map(([label, target]) => (
             <button
               key={target}
@@ -480,10 +404,12 @@ function App() {
               setPrompt={setPrompt}
               openDrawer={setDrawer}
               startGeneration={startGeneration}
-              applyTemplate={applyTemplate}
+              works={works}
+              fillFromWork={fillFromWork}
               go={go}
               continuous={continuous}
               setContinuous={setContinuous}
+              referenceCount={selectedAssets.length}
             />
           )}
           {page === "loft" && (
@@ -494,10 +420,9 @@ function App() {
               setPrompt={setPrompt}
               openDrawer={setDrawer}
               startGeneration={startGeneration}
-              applyTemplate={applyTemplate}
-              goBack={goBack}
               continuous={continuous}
               setContinuous={setContinuous}
+              referenceCount={selectedAssets.length}
             />
           )}
           {page === "design" && (
@@ -514,6 +439,7 @@ function App() {
               setContinuous={setContinuous}
               fillPrompt={text => setPrompt(text)}
               go={go}
+              referenceCount={selectedAssets.length}
             />
           )}
           {page === "mine" && <MinePage go={go} />}
@@ -529,15 +455,6 @@ function App() {
                 setDrawer("workActions");
               }}
               setDeleteDialog={setDeleteDialog}
-            />
-          )}
-          {page === "templates" && (
-            <TemplatesPage
-              filter={templateFilter}
-              setFilter={setTemplateFilter}
-              templates={visibleTemplates}
-              goBack={goBack}
-              applyTemplate={applyTemplate}
             />
           )}
           {page === "imageDetail" && (
@@ -561,15 +478,11 @@ function App() {
           {page === "billing" && <BillingPage goBack={goBack} />}
         </ScreenTransition>
 
-        {["home", "design", "mine", "works", "templates"].includes(page) && <BottomNav page={page} go={go} />}
+        {["home", "mine", "works"].includes(page) && <BottomNav page={page} go={go} />}
         <DrawerHost
           drawer={drawer}
           openDrawer={setDrawer}
           close={() => setDrawer(null)}
-          applyTemplate={applyTemplate}
-          templateFilter={templateFilter}
-          setTemplateFilter={setTemplateFilter}
-          visibleTemplates={visibleTemplates}
           modelType={modelType}
           setModelType={changeModelType}
           model={model}
@@ -581,7 +494,6 @@ function App() {
           selectedWork={selectedWork}
           openDetailFromWork={openDetailFromWork}
           setDeleteDialog={setDeleteDialog}
-          generationState={generationState}
           go={go}
         />
         {deleteDialog && (
@@ -669,7 +581,7 @@ function BottomNav({ page, go }: { page: Page; go: (page: Page) => void }) {
   return (
     <nav className="bottom-nav">
       {items.map(item => {
-        const active = page === item.id || (item.id === "mine" && ["works", "templates", "billing"].includes(page));
+        const active = page === item.id || (item.id === "mine" && ["works", "billing"].includes(page));
         return (
           <button key={item.id} className={active ? "nav-item active" : "nav-item"} onClick={() => go(item.id)}>
             <Icon name={item.icon} size={20} />
@@ -707,6 +619,7 @@ function Composer({
   placeholder = "输入一句话让我帮你设计",
   continuous,
   setContinuous,
+  referenceCount = 0,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -715,9 +628,16 @@ function Composer({
   placeholder?: string;
   continuous: boolean;
   setContinuous: (value: boolean) => void;
+  referenceCount?: number;
 }) {
   return (
     <section className="composer">
+      {referenceCount > 0 && (
+        <div className="reference-pill">
+          <Icon name="gallery" size={13} />
+          已带入 {referenceCount} 张参考图
+        </div>
+      )}
       <textarea
         value={value}
         onChange={event => onChange(event.target.value)}
@@ -735,12 +655,14 @@ function Composer({
           <button className="round-tool" onClick={() => openDrawer("config")} aria-label="配置项">
             <Icon name="settings" size={17} />
           </button>
-          <button className="ghost-tool" onClick={() => openDrawer("template")}>
-            模版
-          </button>
         </div>
-        <button className={continuous ? "context-switch active" : "context-switch"} onClick={() => setContinuous(!continuous)}>
-          连续
+        <button
+          className={continuous ? "context-switch active" : "context-switch"}
+          onClick={() => setContinuous(!continuous)}
+          aria-pressed={continuous}
+        >
+          <span>连续</span>
+          <i />
         </button>
         <button className="optimize">优化</button>
         <button className="send-button" onClick={onSend} aria-label="发送">
@@ -755,7 +677,6 @@ function LoginPage({ go }: { go: (page: Page) => void }) {
   return (
     <div className="page auth-page">
       <StatusBar />
-      <button className="system-back">知衣</button>
       <section className="login-panel">
         <h1>登录 FD+</h1>
         <p>用手机号进入移动端对话生图体验</p>
@@ -776,7 +697,7 @@ function LoginPage({ go }: { go: (page: Page) => void }) {
         </label>
       </section>
       <button className="brand-lockup" onClick={() => go("intro")}>
-        <strong>知衣 FD+</strong>
+        <strong>FashionDiffusion+</strong>
         <Icon name="arrowDown" size={18} />
       </button>
     </div>
@@ -785,16 +706,12 @@ function LoginPage({ go }: { go: (page: Page) => void }) {
 
 function IntroPage({ goBack }: { goBack: () => void }) {
   return (
-    <div className="page intro-page">
+    <div className="page intro-page" onClick={goBack}>
       <StatusBar />
-      <button className="system-back" onClick={goBack}>
-        <Icon name="arrowLeft" size={16} />
-        返回登录
-      </button>
-      <section className="intro-sheet enter-sheet">
+      <button className="intro-dismiss-layer" onClick={goBack} aria-label="关闭介绍" />
+      <section className="intro-sheet enter-sheet" onClick={event => event.stopPropagation()}>
         <div className="brand-title">
-          <strong>知衣</strong>
-          <span>Fashion Diffusion</span>
+          <strong>FashionDiffusion+</strong>
           <Icon name="arrowDown" size={18} />
         </div>
         <div className="intro-video">
@@ -805,7 +722,7 @@ function IntroPage({ goBack }: { goBack: () => void }) {
         </div>
         <div className="intro-card">
           <h2>让服装设计更快进入可视化</h2>
-          <p>FD+ 聚焦服装行业的图片与视频生成，从描述、参考图、模版到作品复用，帮助团队更快完成创意验证。</p>
+          <p>FD+ 聚焦服装行业的图片与视频生成，从描述、参考图到作品复用，帮助团队更快完成创意验证。</p>
           <div className="stats">
             <span><strong>3000+</strong>品牌案例</span>
             <span><strong>2000+</strong>设计场景</span>
@@ -819,8 +736,8 @@ function IntroPage({ goBack }: { goBack: () => void }) {
 
 function GuidePage({ go }: { go: (page: Page) => void }) {
   const steps = [
-    ["选择模版", "从官方推荐模版快速理解可生成内容"],
-    ["描述或上传", "输入提示词，也可以加入参考图"],
+    ["选择作品", "从作品广场复用参考图和提示词"],
+    ["描述或上传", "输入提示词，也可以继续加入参考图"],
     ["沉淀作品", "在设计页和作品页继续编辑复用"],
   ];
   return (
@@ -829,7 +746,7 @@ function GuidePage({ go }: { go: (page: Page) => void }) {
       <section className="guide-hero">
         <div>
           <h2>从一句描述开始做服装视觉</h2>
-          <p>图片、视频和官方模版都收束在同一个输入框。</p>
+          <p>图片、视频和作品复用都收束在同一个输入框。</p>
         </div>
         <MiniArtwork tone="purple" />
       </section>
@@ -860,14 +777,16 @@ function HomePage(props: {
   setPrompt: (prompt: string) => void;
   openDrawer: (drawer: Drawer) => void;
   startGeneration: () => void;
-  applyTemplate: (template: TemplateItem) => void;
+  works: WorkItem[];
+  fillFromWork: (work: WorkItem) => void;
   go: (page: Page) => void;
   continuous: boolean;
   setContinuous: (value: boolean) => void;
+  referenceCount: number;
 }) {
   return (
     <div className="page with-nav">
-      <TopBar title="今天想做什么？" right={<button className="plain-icon"><Icon name="more" size={22} /></button>} />
+      <TopBar title="今天想做什么？" />
       <CategoryRail active={props.activeCategory} setActive={props.setActiveCategory} onMore={() => props.go("loft")} />
       <div className="home-composer-wrap">
         <Composer
@@ -877,41 +796,22 @@ function HomePage(props: {
           onSend={props.startGeneration}
           continuous={props.continuous}
           setContinuous={props.setContinuous}
+          referenceCount={props.referenceCount}
         />
       </div>
-      <button className="banner-card" onClick={() => props.openDrawer("template")}>
-        <div>
-          <strong>最新活动</strong>
-          <p>官方推荐模版已支持图片与视频一键应用</p>
-        </div>
-        <Icon name="arrowUpRight" size={18} />
-      </button>
       <section className="section-block">
         <div className="section-head">
-          <h3>推荐模版</h3>
-          <button onClick={() => props.go("templates")}>查看全部</button>
-        </div>
-        <div className="quick-grid">
-          {templates.slice(0, 4).map(template => (
-            <button key={template.id} className="quick-card" onClick={() => props.applyTemplate(template)}>
-              <MiniArtwork tone={template.media === "video" ? "purple" : "blue"} play={template.media === "video"} />
-              <strong>{template.title}</strong>
-              <span>{template.scene}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-      <section className="section-block last">
-        <div className="section-head">
           <h3>作品广场</h3>
-          <span>复用灵感继续生成</span>
+          <span>点击作品复用参考图和提示词</span>
         </div>
-        <div className="scene-grid">
-          {quickScenes.map(scene => (
-            <button key={scene.title} className="scene-card" onClick={props.startGeneration}>
-              <strong>{scene.title}</strong>
-              <p>{scene.body}</p>
-            </button>
+        <div className="masonry home-gallery">
+          {props.works.map((work, index) => (
+            <WorkCard
+              key={work.id}
+              work={work}
+              tall={index % 3 === 0}
+              onClick={() => props.fillFromWork(work)}
+            />
           ))}
         </div>
       </section>
@@ -926,23 +826,16 @@ function LoftPage(props: {
   setPrompt: (prompt: string) => void;
   openDrawer: (drawer: Drawer) => void;
   startGeneration: () => void;
-  applyTemplate: (template: TemplateItem) => void;
-  goBack: () => void;
   continuous: boolean;
   setContinuous: (value: boolean) => void;
+  referenceCount: number;
 }) {
-  const items = props.activeCategory === "热门" ? templates.slice(0, 3) : templates.filter(item => item.category === props.activeCategory || props.activeCategory === "视频" && item.media === "video");
   return (
-    <div className="page with-nav">
-      <TopBar title="官方推荐模版" back={props.goBack} subtitle="点击卡片填入输入框" />
-      <div className="loft-strip">
-        {(items.length ? items : templates.slice(0, 3)).map(template => (
-          <button key={template.id} className="loft-card" onClick={() => props.applyTemplate(template)}>
-            <MiniArtwork tone={template.media === "video" ? "purple" : "amber"} play={template.media === "video"} />
-            <strong>{template.title}</strong>
-            <p>{template.scene}</p>
-          </button>
-        ))}
+    <div className="page with-nav loft-page">
+      <StatusBar />
+      <div className="loft-pull-hint">
+        <span />
+        <strong>更多生成场景</strong>
       </div>
       <CategoryRail active={props.activeCategory} setActive={props.setActiveCategory} onMore={() => props.setActiveCategory("商品详情")} />
       <div className="home-composer-wrap loft">
@@ -953,11 +846,15 @@ function LoftPage(props: {
           onSend={props.startGeneration}
           continuous={props.continuous}
           setContinuous={props.setContinuous}
+          referenceCount={props.referenceCount}
         />
       </div>
-      <section className="template-list compact-list">
-        {templates.map(template => (
-          <TemplateRow key={template.id} template={template} onApply={() => props.applyTemplate(template)} />
+      <section className="scene-grid loft-scenes">
+        {templateCategories.map(category => (
+          <button key={category} className="scene-card" onClick={() => props.setActiveCategory(category)}>
+            <strong>{category}</strong>
+            <p>选择后在输入框中描述具体生成需求</p>
+          </button>
         ))}
       </section>
     </div>
@@ -998,14 +895,15 @@ function DesignPage(props: {
   setContinuous: (value: boolean) => void;
   fillPrompt: (text: string) => void;
   go: (page: Page) => void;
+  referenceCount: number;
 }) {
   return (
     <div className="page design-page">
       <TopBar
         title="设计"
+        back={() => props.go("home")}
         right={
           <div className="top-actions">
-            <button className="icon-button" onClick={() => props.openDrawer("generation")}><Icon name="listFilter" size={17} /></button>
             <button className="icon-button" onClick={() => props.go("works")}><Icon name="folderOpen" size={17} /></button>
           </div>
         }
@@ -1030,6 +928,7 @@ function DesignPage(props: {
           placeholder="输入想继续设计的画面"
           continuous={props.continuous}
           setContinuous={props.setContinuous}
+          referenceCount={props.referenceCount}
         />
       </div>
     </div>
@@ -1097,8 +996,7 @@ function MinePage({ go }: { go: (page: Page) => void }) {
       </section>
       <div className="menu-list">
         <MenuRow icon={<Icon name="gallery" size={20} />} title="我的作品" body="查看图片/视频结果，支持批量管理" onClick={() => go("works")} />
-        <MenuRow icon={<Icon name="library" size={20} />} title="推荐模版" body="官方推荐模版，不含自定义模版" onClick={() => go("templates")} />
-        <MenuRow icon={<Icon name="coins" size={20} />} title="扣款管理" body="余额、生成消耗、失败不扣点" onClick={() => go("billing")} />
+        <MenuRow icon={<Icon name="coins" size={20} />} title="生成记录" body="扣点统计、任务状态、失败记录" onClick={() => go("billing")} />
         <MenuRow icon={<Icon name="settings" size={20} />} title="设置" body="账号与权限" />
       </div>
       <button className="logout-button">退出登录</button>
@@ -1128,9 +1026,10 @@ function WorksPage(props: {
   openActions: (work: WorkItem) => void;
   setDeleteDialog: (value: boolean) => void;
 }) {
+  const [batchMode, setBatchMode] = useState(false);
   return (
     <div className="page works-page with-nav">
-      <TopBar title="我的作品" back={props.goBack} right={<button className="icon-button" onClick={() => props.setDeleteDialog(true)}><Icon name="more" size={18} /></button>} />
+      <TopBar title="我的作品" back={props.goBack} />
       <div className="search-bar">
         <Icon name="search" size={17} />
         <input placeholder="搜索提示词 / 会话 / 时间" />
@@ -1141,6 +1040,12 @@ function WorksPage(props: {
           <Chip key={item} label={item} active={props.filter === item} onClick={() => props.setFilter(item)} />
         ))}
       </div>
+      {batchMode && (
+        <div className="batch-action-row">
+          <button onClick={() => props.setDeleteDialog(true)}><Icon name="trash" size={15} />删除</button>
+          <button><Icon name="download" size={15} />下载</button>
+        </div>
+      )}
       <div className="masonry">
         {props.works.map((work, index) => (
           <WorkCard
@@ -1152,8 +1057,8 @@ function WorksPage(props: {
           />
         ))}
       </div>
-      <button className="batch-button" onClick={() => props.setDeleteDialog(true)}>
-        批量管理
+      <button className={batchMode ? "batch-button active" : "batch-button"} onClick={() => setBatchMode(!batchMode)}>
+        {batchMode ? "完成管理" : "批量管理"}
       </button>
     </div>
   );
@@ -1168,7 +1073,7 @@ function WorkCard({
   work: WorkItem;
   tall?: boolean;
   onClick: () => void;
-  onMore: () => void;
+  onMore?: () => void;
 }) {
   return (
     <article className={tall ? "work-card tall" : "work-card"}>
@@ -1176,61 +1081,14 @@ function WorkCard({
         <span className="media-badge">{work.media === "video" ? "视频" : "图片"}</span>
         <MiniArtwork tone={work.tone} play={work.media === "video"} />
       </button>
-      <button className="more-float" onClick={onMore} aria-label="作品操作">
-        <Icon name="more" size={16} />
-      </button>
+      {onMore && (
+        <button className="more-float" onClick={onMore} aria-label="作品操作">
+          <Icon name="more" size={16} />
+        </button>
+      )}
       <strong>{work.title}</strong>
       <p>{work.time} · {work.media === "video" ? "视频" : "图片"}</p>
       {work.favorite && <Icon name="heart" className="fav" size={13} fill="currentColor" />}
-    </article>
-  );
-}
-
-function TemplatesPage(props: {
-  filter: string;
-  setFilter: (filter: string) => void;
-  templates: TemplateItem[];
-  goBack: () => void;
-  applyTemplate: (template: TemplateItem, run?: boolean) => void;
-}) {
-  return (
-    <div className="page templates-page with-nav">
-      <TopBar title="推荐模版" subtitle="仅官方模版" back={props.goBack} />
-      <div className="search-bar">
-        <Icon name="search" size={17} />
-        <input placeholder="搜索场景 / 标题 / 提示词" />
-        <button><Icon name="listFilter" size={16} /></button>
-      </div>
-      <div className="filter-row scrollable">
-        {["热门", "图片", "视频", "商拍精修", "款式修改", "图案设计", "线稿设计"].map(item => (
-          <Chip key={item} label={item} active={props.filter === item} onClick={() => props.setFilter(item)} />
-        ))}
-      </div>
-      <section className="template-list">
-        {props.templates.map(template => (
-          <TemplateRow key={template.id} template={template} onApply={() => props.applyTemplate(template)} onRun={() => props.applyTemplate(template, true)} />
-        ))}
-      </section>
-    </div>
-  );
-}
-
-function TemplateRow({ template, onApply, onRun }: { template: TemplateItem; onApply: () => void; onRun?: () => void }) {
-  return (
-    <article className="template-row">
-      <MiniArtwork tone={template.media === "video" ? "purple" : "blue"} play={template.media === "video"} />
-      <div>
-        <div className="row-title">
-          <strong>{template.title}</strong>
-          <span>官方</span>
-        </div>
-        <p>{template.prompt}</p>
-        <div className="template-actions">
-          <span>{template.scene}</span>
-          <button onClick={onApply}>应用</button>
-          {onRun && <button className="run" onClick={onRun}>生成</button>}
-        </div>
-      </div>
     </article>
   );
 }
@@ -1294,29 +1152,30 @@ function DetailMetaRow({ label, value }: { label: string; value: string }) {
 
 function BillingPage({ goBack }: { goBack: () => void }) {
   const rows = [
-    ["生成扣点", "图片任务 · 成功 · -2 点"],
-    ["生成扣点", "视频任务 · 成功 · -12 点"],
-    ["失败不扣点", "任务失败 · 已退回"],
-    ["额度变更", "管理员发放 · +500 点"],
+    { title: "图片生成", body: "任务成功 · FD+3.0 · -2 点", status: "成功" },
+    { title: "视频生成", body: "任务成功 · Seedance 2.0 · -12 点", status: "成功" },
+    { title: "失败任务", body: "任务失败 · 未扣点 · 已退回", status: "失败" },
+    { title: "额度变更", body: "管理员发放 · +500 点", status: "入账" },
   ];
   return (
     <div className="page billing-page">
-      <TopBar title="扣款管理" back={goBack} />
+      <TopBar title="生成记录" back={goBack} />
       <section className="balance-card">
         <p>当前可用点数</p>
         <strong>1,280</strong>
-        <span>失败任务不扣点，成功后按模型和清晰度扣减</span>
+        <span>近 7 天扣点 38 点 · 近 30 天扣点 216 点</span>
       </section>
       <div className="filter-row scrollable">
         {["全部", "成功", "失败", "图片", "视频"].map((item, index) => <Chip key={item} label={item} active={index === 0} />)}
       </div>
       <div className="billing-list">
-        {rows.map(([title, body]) => (
-          <button key={`${title}-${body}`} className="billing-row">
+        {rows.map(row => (
+          <button key={`${row.title}-${row.body}`} className={`billing-row ${row.status === "失败" ? "failed" : ""}`}>
             <span>
-              <strong>{title}</strong>
-              <small>{body}</small>
+              <strong>{row.title}</strong>
+              <small>{row.body}</small>
             </span>
+            <em>{row.status}</em>
             <Icon name="chevronRight" size={18} />
           </button>
         ))}
@@ -1329,10 +1188,6 @@ function DrawerHost(props: {
   drawer: Drawer;
   openDrawer: (drawer: Drawer) => void;
   close: () => void;
-  applyTemplate: (template: TemplateItem, run?: boolean) => void;
-  templateFilter: string;
-  setTemplateFilter: (filter: string) => void;
-  visibleTemplates: TemplateItem[];
   modelType: MediaType;
   setModelType: (type: MediaType) => void;
   model: string;
@@ -1344,7 +1199,6 @@ function DrawerHost(props: {
   selectedWork: WorkItem;
   openDetailFromWork: (work: WorkItem) => void;
   setDeleteDialog: (value: boolean) => void;
-  generationState: "idle" | "running" | "done";
   go: (page: Page) => void;
 }) {
   if (!props.drawer) return null;
@@ -1370,15 +1224,6 @@ function DrawerHost(props: {
           />
         )}
         {props.drawer === "config" && <ConfigDrawer modelType={props.modelType} config={props.config} setConfig={props.setConfig} close={props.close} />}
-        {props.drawer === "template" && (
-          <TemplateDrawer
-            filter={props.templateFilter}
-            setFilter={props.setTemplateFilter}
-            templates={props.visibleTemplates}
-            applyTemplate={props.applyTemplate}
-            close={props.close}
-          />
-        )}
         {props.drawer === "workActions" && (
           <WorkActionsDrawer
             work={props.selectedWork}
@@ -1387,7 +1232,6 @@ function DrawerHost(props: {
             setDeleteDialog={props.setDeleteDialog}
           />
         )}
-        {props.drawer === "generation" && <GenerationDrawer state={props.generationState} go={props.go} />}
       </section>
     </div>
   );
@@ -1408,7 +1252,6 @@ function UploadDrawer({ close, openGallery, openLibrary }: { close: () => void; 
         <div><strong>本地上传</strong><small>调用设备图片上传</small></div>
         <Icon name="chevronRight" size={18} />
       </button>
-      <button className="sheet-cancel" onClick={close}>取消</button>
     </>
   );
 }
@@ -1469,7 +1312,6 @@ function ModelDrawer(props: {
         ))}
       </div>
       <button className="primary-button wide" onClick={props.close}>使用模型</button>
-      <button className="sheet-cancel" onClick={props.close}>取消</button>
     </>
   );
 }
@@ -1514,10 +1356,8 @@ function ConfigDrawer({
                   className={config[key] === value ? "active" : ""}
                   onClick={() => setConfig({ ...config, [key]: value })}
                 >
-                  <span className="option-box" />
                   <span>{value}</span>
                   {value === "Auto" && <small>推荐</small>}
-                  {config[key] === value ? <Icon name="check" size={16} /> : null}
                 </button>
               ))}
             </div>
@@ -1525,37 +1365,6 @@ function ConfigDrawer({
         ))}
       </div>
       <button className="primary-button wide" onClick={close}>保存配置</button>
-      <button className="sheet-cancel" onClick={close}>取消</button>
-    </>
-  );
-}
-
-function TemplateDrawer(props: {
-  filter: string;
-  setFilter: (filter: string) => void;
-  templates: TemplateItem[];
-  applyTemplate: (template: TemplateItem, run?: boolean) => void;
-  close: () => void;
-}) {
-  return (
-    <>
-      <h3>推荐模版</h3>
-      <div className="filter-row scrollable in-sheet">
-        {["热门", "图片", "视频"].map(item => (
-          <Chip key={item} label={item} active={props.filter === item} onClick={() => props.setFilter(item)} />
-        ))}
-      </div>
-      <div className="sheet-template-list">
-        {props.templates.slice(0, 3).map(template => (
-          <TemplateRow
-            key={template.id}
-            template={template}
-            onApply={() => props.applyTemplate(template)}
-            onRun={() => props.applyTemplate(template, true)}
-          />
-        ))}
-      </div>
-      <button className="sheet-cancel" onClick={props.close}>取消</button>
     </>
   );
 }
@@ -1573,29 +1382,6 @@ function WorkActionsDrawer(props: {
       <button className="action-row"><Icon name="refresh" size={18} />重新生成</button>
       <button className="action-row"><Icon name="download" size={18} />下载</button>
       <button className="action-row danger" onClick={() => props.setDeleteDialog(true)}><Icon name="trash" size={18} />删除</button>
-      <button className="sheet-cancel" onClick={props.close}>取消</button>
-    </>
-  );
-}
-
-function GenerationDrawer({ state, go }: { state: "idle" | "running" | "done"; go: (page: Page) => void }) {
-  return (
-    <>
-      <h3>生成任务</h3>
-      <div className="generation-card">
-        <div className="generation-preview">
-          {state === "running" ? <Icon name="loader" className="spin" size={34} /> : <Icon name="check" size={34} />}
-        </div>
-        <strong>{state === "running" ? "正在生成图片/视频结果" : "生成已完成"}</strong>
-        <p>任务会进入默认会话，开启连续对话后会在同一会话内承接上下文。</p>
-        <div className="progress-track"><span className={state === "running" ? "running" : "done"} /></div>
-      </div>
-      <div className="task-manager-list">
-        <span>图片任务 · 生成中</span>
-        <span>视频任务 · 排队中</span>
-        <span>失败任务 · 不扣点</span>
-      </div>
-      <button className="primary-button wide" onClick={() => go("design")}>查看设计页</button>
     </>
   );
 }
