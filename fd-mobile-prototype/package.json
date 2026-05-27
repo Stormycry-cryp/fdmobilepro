@@ -8,9 +8,13 @@
     "serve": "python3 -m http.server 5177 -d ."
   },
   "dependencies": {
-    "typescript": "^5.2.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.2.2"
+  }
 }
