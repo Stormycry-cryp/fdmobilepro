@@ -1,5 +1,10 @@
 # Changelog
 
+## fd-mobile-v0.2.1 - 2026-05-28
+
+- Fixed the design page composer so it stays pinned at the bottom top layer while only the result feed scrolls underneath it.
+- Added bottom padding to the result feed so generated result cards do not sit behind the fixed composer.
+
 ## fd-mobile-v0.2.0 - 2026-05-28
 
 - Removed the home recommendation-template floor and the official-template page/entry.

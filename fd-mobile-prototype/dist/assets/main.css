@@ -2757,15 +2757,26 @@ textarea:focus-visible {
 }
 .design-page {
   padding-bottom: 178px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .design-page .result-feed {
-  padding-bottom: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 162px;
+  scrollbar-width: none;
+}
+.design-page .result-feed::-webkit-scrollbar {
+  display: none;
 }
 .design-page .sticky-composer {
   left: 14px;
   right: 14px;
   bottom: 14px;
-  z-index: 26;
+  z-index: 80;
+  pointer-events: auto;
 }
 .design-page .sticky-composer .composer {
   height: 132px;
