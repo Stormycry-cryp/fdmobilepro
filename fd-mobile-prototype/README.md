@@ -5,6 +5,7 @@ Standalone React prototype for FD+ Mobile v1.
 ## Commands
 
 ```bash
+pnpm install
 pnpm run build
 pnpm run serve
 ```
@@ -23,4 +24,3 @@ Open `http://127.0.0.1:5177/index.html`.
 ## Build Output
 
 `pnpm run build` writes bundled assets to `dist/assets/`.
-

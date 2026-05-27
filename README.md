@@ -32,6 +32,7 @@ Not included:
 
 ```bash
 cd fd-mobile-prototype
+pnpm install
 pnpm run build
 pnpm run serve
 ```
@@ -51,4 +52,3 @@ Verified on 2026-05-27:
 - `pnpm run build`
 - Browser automation through login, onboarding, home, model/config drawers, generation, design result stream, image detail, works, official templates, and deduction management
 - Search confirmed no flow-chart code or copy remains inside `fd-mobile-prototype/`
-
