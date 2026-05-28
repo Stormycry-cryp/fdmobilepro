@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 type IconName =
   | "arrowDown"
@@ -123,6 +123,15 @@ interface ResultTask {
   hasReference?: boolean;
 }
 
+interface BillingRecord {
+  id: string;
+  taskId: string;
+  title: string;
+  body: string;
+  status: "成功" | "失败";
+  media: MediaType;
+}
+
 interface GenerationConfig {
   createType: string;
   batch: string;
@@ -212,16 +221,75 @@ const initialTasks: ResultTask[] = [
     status: "success",
     hasReference: true,
   },
+  {
+    id: "r4",
+    title: "失败任务",
+    media: "image",
+    prompt: "生成白底主图时保持蕾丝细节和袖口层次",
+    model: "FD+3.0 图片",
+    ratio: "3:4",
+    resolution: "2K",
+    batch: "2 张",
+    status: "failed",
+    hasReference: true,
+  },
+  {
+    id: "r5",
+    title: "商品详情图",
+    media: "image",
+    prompt: "生成领口、袖口和面料局部细节图",
+    model: "FD+3.0 图片",
+    ratio: "4:3",
+    resolution: "4K",
+    batch: "2 张",
+    status: "success",
+  },
+  {
+    id: "r6",
+    title: "香氛短视频",
+    media: "video",
+    prompt: "冷佩感香氛水带货短视频，手持展示，柔和车内光",
+    model: "Seedance 2.0",
+    ratio: "9:16",
+    resolution: "1080p",
+    batch: "1 条",
+    duration: "5s",
+    status: "success",
+  },
+  {
+    id: "r7",
+    title: "线稿成衣",
+    media: "image",
+    prompt: "根据线稿生成成衣效果，补充真实面料和自然阴影",
+    model: "FD+2.0 图片",
+    ratio: "1:1",
+    resolution: "2K",
+    batch: "2 张",
+    status: "success",
+  },
+];
+
+const billingRecords: BillingRecord[] = [
+  { id: "b1", taskId: "r1", title: "图片生成", body: "任务成功 · FD+3.0 · -2 点", status: "成功", media: "image" },
+  { id: "b2", taskId: "r3", title: "视频生成", body: "任务成功 · Seedance 2.0 · -12 点", status: "成功", media: "video" },
+  { id: "b3", taskId: "r4", title: "失败任务", body: "任务失败 · 未扣点 · 已退回", status: "失败", media: "image" },
+  { id: "b4", taskId: "r5", title: "商品详情图", body: "任务成功 · FD+3.0 · -4 点", status: "成功", media: "image" },
+  { id: "b5", taskId: "r6", title: "香氛短视频", body: "任务成功 · Seedance 2.0 · -12 点", status: "成功", media: "video" },
+  { id: "b6", taskId: "r7", title: "线稿成衣", body: "任务成功 · FD+2.0 · -2 点", status: "成功", media: "image" },
+  { id: "b7", taskId: "r2", title: "图片生成中", body: "任务处理中 · FD+2.0 · 暂未扣点", status: "成功", media: "image" },
+  { id: "b8", taskId: "r4", title: "参考图异常", body: "任务失败 · 未扣点 · 素材需重传", status: "失败", media: "image" },
 ];
 
 function App() {
   const [page, setPage] = useState<Page>("login");
-  const [previousPage, setPreviousPage] = useState<Page>("home");
+  const [pageHistory, setPageHistory] = useState<Page[]>([]);
   const [drawer, setDrawer] = useState<Drawer>(null);
   const [prompt, setPrompt] = useState("");
   const [activeCategory, setActiveCategory] = useState("热门");
   const [mediaFilter, setMediaFilter] = useState<"全部" | "图片" | "视频">("全部");
   const [workFilter, setWorkFilter] = useState("全部");
+  const [billingFilter, setBillingFilter] = useState("全部");
+  const [focusTaskId, setFocusTaskId] = useState<string | null>(null);
   const [continuous, setContinuous] = useState(false);
   const [modelType, setModelType] = useState<MediaType>("image");
   const [model, setModel] = useState("FD+3.0 图片");
@@ -247,18 +315,18 @@ function App() {
   }, [workFilter]);
 
   const go = (next: Page) => {
-    setPreviousPage(page);
+    if (next !== page) setPageHistory(current => [...current.slice(-8), page]);
     setDrawer(null);
     setPage(next);
   };
 
   const goBack = () => {
-    if (page === "intro") return setPage("login");
-    if (page === "guide") return setPage("login");
-    if (page === "loft") return setPage("home");
-    if (["works", "billing"].includes(page)) return setPage("mine");
-    if (["imageDetail", "videoDetail"].includes(page)) return setPage(previousPage === "works" ? "works" : "design");
-    setPage("home");
+    setDrawer(null);
+    setPageHistory(current => {
+      const next = [...current];
+      setPage(next.pop() ?? "home");
+      return next;
+    });
   };
 
   const changeModelType = (type: MediaType) => {
@@ -286,6 +354,7 @@ function App() {
     setDrawer(null);
     setTasks(current => [nextTask, ...current]);
     setSelectedTask(nextTask);
+    if (page !== "design") setPageHistory(current => [...current.slice(-8), page]);
     setPage("design");
     setToast("生成任务已进入设计页");
     window.setTimeout(() => {
@@ -296,7 +365,6 @@ function App() {
 
   const openDetailFromTask = (task: ResultTask) => {
     setSelectedTask(task);
-    setPreviousPage("design");
     setToast("");
     go(task.media === "video" ? "videoDetail" : "imageDetail");
   };
@@ -316,9 +384,20 @@ function App() {
       status: "success",
       hasReference: true,
     });
-    setPreviousPage("works");
     setToast("");
     go(work.media === "video" ? "videoDetail" : "imageDetail");
+  };
+
+  const openRecordTask = (taskId: string) => {
+    const task = tasks.find(item => item.id === taskId) ?? initialTasks.find(item => item.id === taskId);
+    if (task) {
+      setMediaFilter(task.media === "video" ? "视频" : "图片");
+      setSelectedTask(task);
+    } else {
+      setMediaFilter("全部");
+    }
+    setFocusTaskId(taskId);
+    go("design");
   };
 
   const fillFromResult = () => {
@@ -334,7 +413,7 @@ function App() {
       duration: selectedTask.duration ?? current.duration,
     }));
     setToast("已回填参考图、提示词和配置");
-    setPage("design");
+    go("design");
   };
 
   const fillFromWork = (work: WorkItem) => {
@@ -392,93 +471,107 @@ function App() {
       </aside>
 
       <PhoneFrame>
-        <ScreenTransition page={page}>
-          {page === "login" && <LoginPage go={go} />}
-          {page === "intro" && <IntroPage goBack={goBack} />}
-          {page === "guide" && <GuidePage go={go} />}
-          {page === "home" && (
-            <HomePage
-              activeCategory={activeCategory}
-              setActiveCategory={setActiveCategory}
-              prompt={prompt}
-              setPrompt={setPrompt}
-              openDrawer={setDrawer}
-              startGeneration={startGeneration}
-              works={works}
-              fillFromWork={fillFromWork}
-              go={go}
-              continuous={continuous}
-              setContinuous={setContinuous}
-              referenceCount={selectedAssets.length}
-            />
-          )}
-          {page === "loft" && (
-            <LoftPage
-              activeCategory={activeCategory}
-              setActiveCategory={setActiveCategory}
-              prompt={prompt}
-              setPrompt={setPrompt}
-              openDrawer={setDrawer}
-              startGeneration={startGeneration}
-              continuous={continuous}
-              setContinuous={setContinuous}
-              referenceCount={selectedAssets.length}
-            />
-          )}
-          {page === "design" && (
-            <DesignPage
-              filter={mediaFilter}
-              setFilter={setMediaFilter}
-              tasks={visibleTasks}
-              openDetail={openDetailFromTask}
-              openDrawer={setDrawer}
-              prompt={prompt}
-              setPrompt={setPrompt}
-              startGeneration={startGeneration}
-              continuous={continuous}
-              setContinuous={setContinuous}
-              fillPrompt={text => setPrompt(text)}
-              go={go}
-              referenceCount={selectedAssets.length}
-            />
-          )}
-          {page === "mine" && <MinePage go={go} />}
-          {page === "works" && (
-            <WorksPage
-              filter={workFilter}
-              setFilter={setWorkFilter}
-              works={visibleWorks}
-              goBack={goBack}
-              openDetail={openDetailFromWork}
-              openActions={(work) => {
-                setSelectedWork(work);
-                setDrawer("workActions");
-              }}
-              setDeleteDialog={setDeleteDialog}
-            />
-          )}
-          {page === "imageDetail" && (
-            <DetailPage
-              type="image"
-              task={selectedTask}
-              goBack={goBack}
-              fillFromResult={fillFromResult}
-              startGeneration={startGeneration}
-            />
-          )}
-          {page === "videoDetail" && (
-            <DetailPage
-              type="video"
-              task={selectedTask}
-              goBack={goBack}
-              fillFromResult={fillFromResult}
-              startGeneration={startGeneration}
-            />
-          )}
-          {page === "billing" && <BillingPage goBack={goBack} />}
-        </ScreenTransition>
+        <PointerTouchLayer page={page} openLoft={() => go("loft")} closeLoft={goBack}>
+          <ScreenTransition page={page}>
+            {page === "login" && <LoginPage go={go} />}
+            {page === "intro" && <IntroPage goBack={goBack} />}
+            {page === "guide" && <GuidePage go={go} />}
+            {page === "home" && (
+              <HomePage
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
+                prompt={prompt}
+                setPrompt={setPrompt}
+                openDrawer={setDrawer}
+                startGeneration={startGeneration}
+                works={works}
+                fillFromWork={fillFromWork}
+                go={go}
+                continuous={continuous}
+                setContinuous={setContinuous}
+                referenceCount={selectedAssets.length}
+              />
+            )}
+            {page === "loft" && (
+              <LoftPage
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
+                prompt={prompt}
+                setPrompt={setPrompt}
+                openDrawer={setDrawer}
+                startGeneration={startGeneration}
+                continuous={continuous}
+                setContinuous={setContinuous}
+                referenceCount={selectedAssets.length}
+                goBack={goBack}
+              />
+            )}
+            {page === "design" && (
+              <DesignPage
+                filter={mediaFilter}
+                setFilter={setMediaFilter}
+                tasks={visibleTasks}
+                openDetail={openDetailFromTask}
+                openDrawer={setDrawer}
+                prompt={prompt}
+                setPrompt={setPrompt}
+                startGeneration={startGeneration}
+                continuous={continuous}
+                setContinuous={setContinuous}
+                fillPrompt={text => setPrompt(text)}
+                go={go}
+                goBack={goBack}
+                focusTaskId={focusTaskId}
+                clearFocusTask={() => setFocusTaskId(null)}
+                referenceCount={selectedAssets.length}
+              />
+            )}
+            {page === "mine" && <MinePage go={go} />}
+            {page === "works" && (
+              <WorksPage
+                filter={workFilter}
+                setFilter={setWorkFilter}
+                works={visibleWorks}
+                goBack={goBack}
+                openDetail={openDetailFromWork}
+                openActions={(work) => {
+                  setSelectedWork(work);
+                  setDrawer("workActions");
+                }}
+                setDeleteDialog={setDeleteDialog}
+              />
+            )}
+            {page === "imageDetail" && (
+              <DetailPage
+                type="image"
+                task={selectedTask}
+                goBack={goBack}
+                fillFromResult={fillFromResult}
+                startGeneration={startGeneration}
+              />
+            )}
+            {page === "videoDetail" && (
+              <DetailPage
+                type="video"
+                task={selectedTask}
+                goBack={goBack}
+                fillFromResult={fillFromResult}
+                startGeneration={startGeneration}
+              />
+            )}
+            {page === "billing" && (
+              <BillingPage
+                goBack={goBack}
+                filter={billingFilter}
+                setFilter={setBillingFilter}
+                records={billingRecords}
+                openRecord={openRecordTask}
+              />
+            )}
+          </ScreenTransition>
+        </PointerTouchLayer>
 
-        {["home", "mine", "works"].includes(page) && <BottomNav page={page} go={go} />}
+        {["home", "loft", "mine", "works"].includes(page) && <BottomNav page={page === "loft" ? "home" : page} go={go} />}
         <DrawerHost
           drawer={drawer}
           openDrawer={setDrawer}
@@ -528,6 +621,93 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
 function ScreenTransition({ page, children }: { page: Page; children: React.ReactNode }) {
   return (
     <div key={page} className="screen-page enter-page">
+      {children}
+    </div>
+  );
+}
+
+function PointerTouchLayer({
+  page,
+  openLoft,
+  closeLoft,
+  children,
+}: {
+  page: Page;
+  openLoft: () => void;
+  closeLoft: () => void;
+  children: React.ReactNode;
+}) {
+  const drag = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    lastY: number;
+    dragging: boolean;
+    scrollTarget: HTMLElement | null;
+  } | null>(null);
+
+  const getScrollableTarget = (target: EventTarget | null) => {
+    let node = target instanceof HTMLElement ? target : null;
+    while (node && !node.classList.contains("screen")) {
+      const style = window.getComputedStyle(node);
+      if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight) return node;
+      node = node.parentElement;
+    }
+    return null;
+  };
+
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch" || event.button !== 0) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("input, textarea, select, a")) return;
+    drag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastY: event.clientY,
+      dragging: false,
+      scrollTarget: getScrollableTarget(event.target),
+    };
+  };
+
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const totalY = event.clientY - current.startY;
+    const totalX = event.clientX - current.startX;
+    if (!current.dragging && Math.hypot(totalX, totalY) < 8) return;
+    if (!current.dragging) {
+      current.dragging = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    const deltaY = event.clientY - current.lastY;
+    if (current.scrollTarget && Math.abs(deltaY) > 0) current.scrollTarget.scrollTop -= deltaY;
+    current.lastY = event.clientY;
+    if (event.cancelable) event.preventDefault();
+  };
+
+  const onPointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const totalY = event.clientY - current.startY;
+    const totalX = event.clientX - current.startX;
+    const wasDragging = current.dragging;
+    drag.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    if (!wasDragging) return;
+    if (Math.abs(totalY) < 72 || Math.abs(totalY) < Math.abs(totalX) * 1.2) return;
+    if (page === "home" && totalY > 0) openLoft();
+    if (page === "loft" && totalY < 0) closeLoft();
+  };
+
+  return (
+    <div
+      className="touch-surface"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
+    >
       {children}
     </div>
   );
@@ -763,7 +943,6 @@ function GuidePage({ go }: { go: (page: Page) => void }) {
         ))}
       </div>
       <div className="guide-actions">
-        <button className="secondary-button" onClick={() => go("home")}>跳过</button>
         <button className="primary-button" onClick={() => go("home")}>开始使用</button>
       </div>
     </div>
@@ -837,13 +1016,45 @@ function LoftPage(props: {
   continuous: boolean;
   setContinuous: (value: boolean) => void;
   referenceCount: number;
+  goBack: () => void;
 }) {
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [closing, setClosing] = useState(false);
+  const closeLoft = () => {
+    if (closing) return;
+    setClosing(true);
+    window.setTimeout(props.goBack, 260);
+  };
+  const heroItems = [
+    { title: "冷感香调带货视频", tone: "purple", media: "video" as MediaType },
+    { title: "海边泳装营销视频", tone: "blue", media: "video" as MediaType },
+    { title: "商拍精修预览", tone: "amber", media: "image" as MediaType },
+  ];
   return (
-    <div className="page with-nav loft-page">
+    <div
+      className={closing ? "page with-nav loft-page closing" : "page with-nav loft-page"}
+      onWheel={event => {
+        if (event.deltaY < -36) closeLoft();
+      }}
+      onTouchStart={event => setTouchStartY(event.touches[0]?.clientY ?? null)}
+      onTouchEnd={event => {
+        const endY = event.changedTouches[0]?.clientY;
+        if (touchStartY !== null && endY - touchStartY < -46) closeLoft();
+        setTouchStartY(null);
+      }}
+    >
       <StatusBar />
-      <div className="loft-pull-hint">
-        <span />
-        <strong>更多生成场景</strong>
+      <div className="loft-hero-rail" aria-label="推荐场景预览">
+        {heroItems.map((item, index) => (
+          <button
+            key={item.title}
+            className={`loft-hero-card ${index === 1 ? "featured" : "side"}`}
+            onClick={() => props.setActiveCategory(item.media === "video" ? "视频" : "商拍精修")}
+          >
+            <MiniArtwork tone={item.tone} play={item.media === "video"} />
+            <span>{item.title}</span>
+          </button>
+        ))}
       </div>
       <CategoryRail active={props.activeCategory} setActive={props.setActiveCategory} onMore={() => props.setActiveCategory("商品详情")} />
       <div className="home-composer-wrap loft">
@@ -857,14 +1068,9 @@ function LoftPage(props: {
           referenceCount={props.referenceCount}
         />
       </div>
-      <section className="scene-grid loft-scenes">
-        {templateCategories.map(category => (
-          <button key={category} className="scene-card" onClick={() => props.setActiveCategory(category)}>
-            <strong>{category}</strong>
-            <p>选择后在输入框中描述具体生成需求</p>
-          </button>
-        ))}
-      </section>
+      <button className="loft-collapse" onClick={closeLoft} aria-label="回到首页首屏">
+        <Icon name="arrowDown" size={18} />
+      </button>
     </div>
   );
 }
@@ -909,13 +1115,16 @@ function DesignPage(props: {
   setContinuous: (value: boolean) => void;
   fillPrompt: (text: string) => void;
   go: (page: Page) => void;
+  goBack: () => void;
+  focusTaskId: string | null;
+  clearFocusTask: () => void;
   referenceCount: number;
 }) {
   return (
     <div className="page design-page">
       <TopBar
         title="设计"
-        back={() => props.go("home")}
+        back={props.goBack}
         right={
           <div className="top-actions">
             <button className="icon-button" onClick={() => props.go("works")}><Icon name="folderOpen" size={17} /></button>
@@ -930,7 +1139,15 @@ function DesignPage(props: {
       </div>
       <div className="result-feed">
         {props.tasks.map(task => (
-          <TaskBlock key={task.id} task={task} openDetail={props.openDetail} fillPrompt={props.fillPrompt} startGeneration={props.startGeneration} />
+          <TaskBlock
+            key={task.id}
+            task={task}
+            focused={props.focusTaskId === task.id}
+            onFocusEnd={props.clearFocusTask}
+            openDetail={props.openDetail}
+            fillPrompt={props.fillPrompt}
+            startGeneration={props.startGeneration}
+          />
         ))}
       </div>
       <div className="sticky-composer">
@@ -951,17 +1168,31 @@ function DesignPage(props: {
 
 function TaskBlock({
   task,
+  focused,
+  onFocusEnd,
   openDetail,
   fillPrompt,
   startGeneration,
 }: {
   task: ResultTask;
+  focused?: boolean;
+  onFocusEnd?: () => void;
   openDetail: (task: ResultTask) => void;
   fillPrompt: (text: string) => void;
   startGeneration: () => void;
 }) {
   return (
-    <article className="task-block">
+    <article
+      className={focused ? "task-block focused" : "task-block"}
+      ref={(node) => {
+        if (node && focused) {
+          window.setTimeout(() => {
+            node.scrollIntoView({ behavior: "smooth", block: "start" });
+            window.setTimeout(() => onFocusEnd?.(), 1200);
+          }, 80);
+        }
+      }}
+    >
       <button className="task-title" onClick={() => fillPrompt(task.prompt)} title="轻点填入输入框">
         <h3>{task.title}</h3>
         <Icon name="copy" size={14} />
@@ -975,15 +1206,15 @@ function TaskBlock({
       </div>
       <div className={task.media === "video" ? "result-strip video-strip" : "result-strip"}>
         {task.media === "video" ? (
-          <button className="result-tile video" onClick={() => openDetail(task)}>
+          <button className={`result-tile video ${task.status === "failed" ? "failed" : ""} ${task.status === "running" ? "running" : ""}`} onClick={() => openDetail(task)}>
             <MiniArtwork tone="purple" play />
-            <span>{task.status === "running" ? "生成中..." : "AI视频"}</span>
+            <span>{task.status === "failed" ? "生成失败" : task.status === "running" ? "生成中..." : "AI视频"}</span>
           </button>
         ) : (
           [0, 1, 2, 3].map(index => (
-            <button key={index} className={`result-tile ${index === 1 && task.status === "running" ? "running" : ""} ${index === 3 && task.status === "success" ? "failed" : ""}`} onClick={() => openDetail(task)}>
-              {index === 1 && task.status === "running" ? <Icon name="loader" className="spin" size={18} /> : <MiniArtwork tone={index === 3 ? "gray" : "blue"} />}
-              <span>{index === 3 && task.status === "success" ? "生成失败" : index === 1 && task.status === "running" ? "生成中..." : "AI生成"}</span>
+            <button key={index} className={`result-tile ${index === 1 && task.status === "running" ? "running" : ""} ${(task.status === "failed" || (index === 3 && task.status === "success")) ? "failed" : ""}`} onClick={() => openDetail(task)}>
+              {index === 1 && task.status === "running" ? <Icon name="loader" className="spin" size={18} /> : <MiniArtwork tone={(task.status === "failed" || index === 3) ? "gray" : "blue"} />}
+              <span>{task.status === "failed" ? "任务失败" : index === 3 && task.status === "success" ? "生成失败" : index === 1 && task.status === "running" ? "生成中..." : "AI生成"}</span>
             </button>
           ))
         )}
@@ -1164,13 +1395,26 @@ function DetailMetaRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function BillingPage({ goBack }: { goBack: () => void }) {
-  const rows = [
-    { title: "图片生成", body: "任务成功 · FD+3.0 · -2 点", status: "成功" },
-    { title: "视频生成", body: "任务成功 · Seedance 2.0 · -12 点", status: "成功" },
-    { title: "失败任务", body: "任务失败 · 未扣点 · 已退回", status: "失败" },
-    { title: "额度变更", body: "管理员发放 · +500 点", status: "入账" },
-  ];
+function BillingPage({
+  goBack,
+  filter,
+  setFilter,
+  records,
+  openRecord,
+}: {
+  goBack: () => void;
+  filter: string;
+  setFilter: (filter: string) => void;
+  records: BillingRecord[];
+  openRecord: (taskId: string) => void;
+}) {
+  const visibleRecords = records.filter(record => {
+    if (filter === "成功") return record.status === "成功";
+    if (filter === "失败") return record.status === "失败";
+    if (filter === "图片") return record.media === "image";
+    if (filter === "视频") return record.media === "video";
+    return true;
+  });
   return (
     <div className="page billing-page">
       <TopBar title="生成记录" back={goBack} />
@@ -1180,11 +1424,17 @@ function BillingPage({ goBack }: { goBack: () => void }) {
         <span>近 7 天扣点 38 点 · 近 30 天扣点 216 点</span>
       </section>
       <div className="filter-row scrollable">
-        {["全部", "成功", "失败", "图片", "视频"].map((item, index) => <Chip key={item} label={item} active={index === 0} />)}
+        {["全部", "成功", "失败", "图片", "视频"].map(item => (
+          <Chip key={item} label={item} active={filter === item} onClick={() => setFilter(item)} />
+        ))}
       </div>
       <div className="billing-list">
-        {rows.map(row => (
-          <button key={`${row.title}-${row.body}`} className={`billing-row ${row.status === "失败" ? "failed" : ""}`}>
+        {visibleRecords.map(row => (
+          <button
+            key={row.id}
+            className={`billing-row ${row.status === "失败" ? "failed" : ""}`}
+            onClick={() => openRecord(row.taskId)}
+          >
             <span>
               <strong>{row.title}</strong>
               <small>{row.body}</small>

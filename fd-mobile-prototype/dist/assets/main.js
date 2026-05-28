@@ -1091,7 +1091,7 @@ var require_react_development = __commonJS({
           var dispatcher = resolveDispatcher();
           return dispatcher.useReducer(reducer, initialArg, init);
         }
-        function useRef(initialValue) {
+        function useRef2(initialValue) {
           var dispatcher = resolveDispatcher();
           return dispatcher.useRef(initialValue);
         }
@@ -1885,7 +1885,7 @@ var require_react_development = __commonJS({
         exports.useLayoutEffect = useLayoutEffect;
         exports.useMemo = useMemo2;
         exports.useReducer = useReducer;
-        exports.useRef = useRef;
+        exports.useRef = useRef2;
         exports.useState = useState2;
         exports.useSyncExternalStore = useSyncExternalStore;
         exports.useTransition = useTransition;
@@ -24720,16 +24720,74 @@ var initialTasks = [
     duration: "5s",
     status: "success",
     hasReference: true
+  },
+  {
+    id: "r4",
+    title: "\u5931\u8D25\u4EFB\u52A1",
+    media: "image",
+    prompt: "\u751F\u6210\u767D\u5E95\u4E3B\u56FE\u65F6\u4FDD\u6301\u857E\u4E1D\u7EC6\u8282\u548C\u8896\u53E3\u5C42\u6B21",
+    model: "FD+3.0 \u56FE\u7247",
+    ratio: "3:4",
+    resolution: "2K",
+    batch: "2 \u5F20",
+    status: "failed",
+    hasReference: true
+  },
+  {
+    id: "r5",
+    title: "\u5546\u54C1\u8BE6\u60C5\u56FE",
+    media: "image",
+    prompt: "\u751F\u6210\u9886\u53E3\u3001\u8896\u53E3\u548C\u9762\u6599\u5C40\u90E8\u7EC6\u8282\u56FE",
+    model: "FD+3.0 \u56FE\u7247",
+    ratio: "4:3",
+    resolution: "4K",
+    batch: "2 \u5F20",
+    status: "success"
+  },
+  {
+    id: "r6",
+    title: "\u9999\u6C1B\u77ED\u89C6\u9891",
+    media: "video",
+    prompt: "\u51B7\u4F69\u611F\u9999\u6C1B\u6C34\u5E26\u8D27\u77ED\u89C6\u9891\uFF0C\u624B\u6301\u5C55\u793A\uFF0C\u67D4\u548C\u8F66\u5185\u5149",
+    model: "Seedance 2.0",
+    ratio: "9:16",
+    resolution: "1080p",
+    batch: "1 \u6761",
+    duration: "5s",
+    status: "success"
+  },
+  {
+    id: "r7",
+    title: "\u7EBF\u7A3F\u6210\u8863",
+    media: "image",
+    prompt: "\u6839\u636E\u7EBF\u7A3F\u751F\u6210\u6210\u8863\u6548\u679C\uFF0C\u8865\u5145\u771F\u5B9E\u9762\u6599\u548C\u81EA\u7136\u9634\u5F71",
+    model: "FD+2.0 \u56FE\u7247",
+    ratio: "1:1",
+    resolution: "2K",
+    batch: "2 \u5F20",
+    status: "success"
   }
+];
+var billingRecords = [
+  { id: "b1", taskId: "r1", title: "\u56FE\u7247\u751F\u6210", body: "\u4EFB\u52A1\u6210\u529F \xB7 FD+3.0 \xB7 -2 \u70B9", status: "\u6210\u529F", media: "image" },
+  { id: "b2", taskId: "r3", title: "\u89C6\u9891\u751F\u6210", body: "\u4EFB\u52A1\u6210\u529F \xB7 Seedance 2.0 \xB7 -12 \u70B9", status: "\u6210\u529F", media: "video" },
+  { id: "b3", taskId: "r4", title: "\u5931\u8D25\u4EFB\u52A1", body: "\u4EFB\u52A1\u5931\u8D25 \xB7 \u672A\u6263\u70B9 \xB7 \u5DF2\u9000\u56DE", status: "\u5931\u8D25", media: "image" },
+  { id: "b4", taskId: "r5", title: "\u5546\u54C1\u8BE6\u60C5\u56FE", body: "\u4EFB\u52A1\u6210\u529F \xB7 FD+3.0 \xB7 -4 \u70B9", status: "\u6210\u529F", media: "image" },
+  { id: "b5", taskId: "r6", title: "\u9999\u6C1B\u77ED\u89C6\u9891", body: "\u4EFB\u52A1\u6210\u529F \xB7 Seedance 2.0 \xB7 -12 \u70B9", status: "\u6210\u529F", media: "video" },
+  { id: "b6", taskId: "r7", title: "\u7EBF\u7A3F\u6210\u8863", body: "\u4EFB\u52A1\u6210\u529F \xB7 FD+2.0 \xB7 -2 \u70B9", status: "\u6210\u529F", media: "image" },
+  { id: "b7", taskId: "r2", title: "\u56FE\u7247\u751F\u6210\u4E2D", body: "\u4EFB\u52A1\u5904\u7406\u4E2D \xB7 FD+2.0 \xB7 \u6682\u672A\u6263\u70B9", status: "\u6210\u529F", media: "image" },
+  { id: "b8", taskId: "r4", title: "\u53C2\u8003\u56FE\u5F02\u5E38", body: "\u4EFB\u52A1\u5931\u8D25 \xB7 \u672A\u6263\u70B9 \xB7 \u7D20\u6750\u9700\u91CD\u4F20", status: "\u5931\u8D25", media: "image" }
 ];
 function App() {
   const [page, setPage] = (0, import_react.useState)("login");
-  const [previousPage, setPreviousPage] = (0, import_react.useState)("home");
+  const [pageHistory, setPageHistory] = (0, import_react.useState)([]);
   const [drawer, setDrawer] = (0, import_react.useState)(null);
   const [prompt, setPrompt] = (0, import_react.useState)("");
   const [activeCategory, setActiveCategory] = (0, import_react.useState)("\u70ED\u95E8");
   const [mediaFilter, setMediaFilter] = (0, import_react.useState)("\u5168\u90E8");
   const [workFilter, setWorkFilter] = (0, import_react.useState)("\u5168\u90E8");
+  const [billingFilter, setBillingFilter] = (0, import_react.useState)("\u5168\u90E8");
+  const [focusTaskId, setFocusTaskId] = (0, import_react.useState)(null);
   const [continuous, setContinuous] = (0, import_react.useState)(false);
   const [modelType, setModelType] = (0, import_react.useState)("image");
   const [model, setModel] = (0, import_react.useState)("FD+3.0 \u56FE\u7247");
@@ -24752,17 +24810,17 @@ function App() {
     return works;
   }, [workFilter]);
   const go = (next) => {
-    setPreviousPage(page);
+    if (next !== page) setPageHistory((current) => [...current.slice(-8), page]);
     setDrawer(null);
     setPage(next);
   };
   const goBack = () => {
-    if (page === "intro") return setPage("login");
-    if (page === "guide") return setPage("login");
-    if (page === "loft") return setPage("home");
-    if (["works", "billing"].includes(page)) return setPage("mine");
-    if (["imageDetail", "videoDetail"].includes(page)) return setPage(previousPage === "works" ? "works" : "design");
-    setPage("home");
+    setDrawer(null);
+    setPageHistory((current) => {
+      const next = [...current];
+      setPage(next.pop() ?? "home");
+      return next;
+    });
   };
   const changeModelType = (type) => {
     setModelType(type);
@@ -24788,6 +24846,7 @@ function App() {
     setDrawer(null);
     setTasks((current) => [nextTask, ...current]);
     setSelectedTask(nextTask);
+    if (page !== "design") setPageHistory((current) => [...current.slice(-8), page]);
     setPage("design");
     setToast("\u751F\u6210\u4EFB\u52A1\u5DF2\u8FDB\u5165\u8BBE\u8BA1\u9875");
     window.setTimeout(() => {
@@ -24797,7 +24856,6 @@ function App() {
   };
   const openDetailFromTask = (task) => {
     setSelectedTask(task);
-    setPreviousPage("design");
     setToast("");
     go(task.media === "video" ? "videoDetail" : "imageDetail");
   };
@@ -24816,9 +24874,19 @@ function App() {
       status: "success",
       hasReference: true
     });
-    setPreviousPage("works");
     setToast("");
     go(work.media === "video" ? "videoDetail" : "imageDetail");
+  };
+  const openRecordTask = (taskId) => {
+    const task = tasks.find((item) => item.id === taskId) ?? initialTasks.find((item) => item.id === taskId);
+    if (task) {
+      setMediaFilter(task.media === "video" ? "\u89C6\u9891" : "\u56FE\u7247");
+      setSelectedTask(task);
+    } else {
+      setMediaFilter("\u5168\u90E8");
+    }
+    setFocusTaskId(taskId);
+    go("design");
   };
   const fillFromResult = () => {
     setPrompt(selectedTask.prompt);
@@ -24833,7 +24901,7 @@ function App() {
       duration: selectedTask.duration ?? current.duration
     }));
     setToast("\u5DF2\u56DE\u586B\u53C2\u8003\u56FE\u3001\u63D0\u793A\u8BCD\u548C\u914D\u7F6E");
-    setPage("design");
+    go("design");
   };
   const fillFromWork = (work) => {
     setPrompt(work.prompt);
@@ -24889,7 +24957,7 @@ function App() {
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(PhoneFrame, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ScreenTransition, { page, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PointerTouchLayer, { page, openLoft: () => go("loft"), closeLoft: goBack, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(ScreenTransition, { page, children: [
         page === "login" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoginPage, { go }),
         page === "intro" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(IntroPage, { goBack }),
         page === "guide" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(GuidePage, { go }),
@@ -24921,7 +24989,8 @@ function App() {
             startGeneration,
             continuous,
             setContinuous,
-            referenceCount: selectedAssets.length
+            referenceCount: selectedAssets.length,
+            goBack
           }
         ),
         page === "design" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -24939,6 +25008,9 @@ function App() {
             setContinuous,
             fillPrompt: (text) => setPrompt(text),
             go,
+            goBack,
+            focusTaskId,
+            clearFocusTask: () => setFocusTaskId(null),
             referenceCount: selectedAssets.length
           }
         ),
@@ -24978,9 +25050,18 @@ function App() {
             startGeneration
           }
         ),
-        page === "billing" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BillingPage, { goBack })
-      ] }),
-      ["home", "mine", "works"].includes(page) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BottomNav, { page, go }),
+        page === "billing" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          BillingPage,
+          {
+            goBack,
+            filter: billingFilter,
+            setFilter: setBillingFilter,
+            records: billingRecords,
+            openRecord: openRecordTask
+          }
+        )
+      ] }) }),
+      ["home", "loft", "mine", "works"].includes(page) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BottomNav, { page: page === "loft" ? "home" : page, go }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         DrawerHost,
         {
@@ -25024,6 +25105,75 @@ function PhoneFrame({ children }) {
 }
 function ScreenTransition({ page, children }) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "screen-page enter-page", children }, page);
+}
+function PointerTouchLayer({
+  page,
+  openLoft,
+  closeLoft,
+  children
+}) {
+  const drag = (0, import_react.useRef)(null);
+  const getScrollableTarget = (target) => {
+    let node = target instanceof HTMLElement ? target : null;
+    while (node && !node.classList.contains("screen")) {
+      const style = window.getComputedStyle(node);
+      if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight) return node;
+      node = node.parentElement;
+    }
+    return null;
+  };
+  const onPointerDown = (event) => {
+    if (event.pointerType === "touch" || event.button !== 0) return;
+    const target = event.target;
+    if (target.closest("input, textarea, select, a")) return;
+    drag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastY: event.clientY,
+      dragging: false,
+      scrollTarget: getScrollableTarget(event.target)
+    };
+  };
+  const onPointerMove = (event) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const totalY = event.clientY - current.startY;
+    const totalX = event.clientX - current.startX;
+    if (!current.dragging && Math.hypot(totalX, totalY) < 8) return;
+    if (!current.dragging) {
+      current.dragging = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    const deltaY = event.clientY - current.lastY;
+    if (current.scrollTarget && Math.abs(deltaY) > 0) current.scrollTarget.scrollTop -= deltaY;
+    current.lastY = event.clientY;
+    if (event.cancelable) event.preventDefault();
+  };
+  const onPointerEnd = (event) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const totalY = event.clientY - current.startY;
+    const totalX = event.clientX - current.startX;
+    const wasDragging = current.dragging;
+    drag.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    if (!wasDragging) return;
+    if (Math.abs(totalY) < 72 || Math.abs(totalY) < Math.abs(totalX) * 1.2) return;
+    if (page === "home" && totalY > 0) openLoft();
+    if (page === "loft" && totalY < 0) closeLoft();
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    "div",
+    {
+      className: "touch-surface",
+      onPointerDown,
+      onPointerMove,
+      onPointerUp: onPointerEnd,
+      onPointerCancel: onPointerEnd,
+      children
+    }
+  );
 }
 function StatusBar() {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "status-bar", children: [
@@ -25203,10 +25353,7 @@ function GuidePage({ go }) {
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "chevronRight", size: 18 })
     ] }, title)) }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "guide-actions", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "secondary-button", onClick: () => go("home"), children: "\u8DF3\u8FC7" }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "primary-button", onClick: () => go("home"), children: "\u5F00\u59CB\u4F7F\u7528" })
-    ] })
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "guide-actions", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "primary-button", onClick: () => go("home"), children: "\u5F00\u59CB\u4F7F\u7528" }) })
   ] });
 }
 function HomePage(props) {
@@ -25254,30 +25401,62 @@ function HomePage(props) {
   ] });
 }
 function LoftPage(props) {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "page with-nav loft-page", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(StatusBar, {}),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "loft-pull-hint", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {}),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "\u66F4\u591A\u751F\u6210\u573A\u666F" })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CategoryRail, { active: props.activeCategory, setActive: props.setActiveCategory, onMore: () => props.setActiveCategory("\u5546\u54C1\u8BE6\u60C5") }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "home-composer-wrap loft", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-      Composer,
-      {
-        value: props.prompt,
-        onChange: props.setPrompt,
-        openDrawer: props.openDrawer,
-        onSend: props.startGeneration,
-        continuous: props.continuous,
-        setContinuous: props.setContinuous,
-        referenceCount: props.referenceCount
-      }
-    ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", { className: "scene-grid loft-scenes", children: templateCategories.map((category) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: "scene-card", onClick: () => props.setActiveCategory(category), children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: category }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u9009\u62E9\u540E\u5728\u8F93\u5165\u6846\u4E2D\u63CF\u8FF0\u5177\u4F53\u751F\u6210\u9700\u6C42" })
-    ] }, category)) })
-  ] });
+  const [touchStartY, setTouchStartY] = (0, import_react.useState)(null);
+  const [closing, setClosing] = (0, import_react.useState)(false);
+  const closeLoft = () => {
+    if (closing) return;
+    setClosing(true);
+    window.setTimeout(props.goBack, 260);
+  };
+  const heroItems = [
+    { title: "\u51B7\u611F\u9999\u8C03\u5E26\u8D27\u89C6\u9891", tone: "purple", media: "video" },
+    { title: "\u6D77\u8FB9\u6CF3\u88C5\u8425\u9500\u89C6\u9891", tone: "blue", media: "video" },
+    { title: "\u5546\u62CD\u7CBE\u4FEE\u9884\u89C8", tone: "amber", media: "image" }
+  ];
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+    "div",
+    {
+      className: closing ? "page with-nav loft-page closing" : "page with-nav loft-page",
+      onWheel: (event) => {
+        if (event.deltaY < -36) closeLoft();
+      },
+      onTouchStart: (event) => setTouchStartY(event.touches[0]?.clientY ?? null),
+      onTouchEnd: (event) => {
+        const endY = event.changedTouches[0]?.clientY;
+        if (touchStartY !== null && endY - touchStartY < -46) closeLoft();
+        setTouchStartY(null);
+      },
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(StatusBar, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "loft-hero-rail", "aria-label": "\u63A8\u8350\u573A\u666F\u9884\u89C8", children: heroItems.map((item, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "button",
+          {
+            className: `loft-hero-card ${index === 1 ? "featured" : "side"}`,
+            onClick: () => props.setActiveCategory(item.media === "video" ? "\u89C6\u9891" : "\u5546\u62CD\u7CBE\u4FEE"),
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MiniArtwork, { tone: item.tone, play: item.media === "video" }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: item.title })
+            ]
+          },
+          item.title
+        )) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CategoryRail, { active: props.activeCategory, setActive: props.setActiveCategory, onMore: () => props.setActiveCategory("\u5546\u54C1\u8BE6\u60C5") }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "home-composer-wrap loft", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          Composer,
+          {
+            value: props.prompt,
+            onChange: props.setPrompt,
+            openDrawer: props.openDrawer,
+            onSend: props.startGeneration,
+            continuous: props.continuous,
+            setContinuous: props.setContinuous,
+            referenceCount: props.referenceCount
+          }
+        ) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "loft-collapse", onClick: closeLoft, "aria-label": "\u56DE\u5230\u9996\u9875\u9996\u5C4F", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "arrowDown", size: 18 }) })
+      ]
+    }
+  );
 }
 function CategoryRail({
   active,
@@ -25304,7 +25483,7 @@ function DesignPage(props) {
       TopBar,
       {
         title: "\u8BBE\u8BA1",
-        back: () => props.go("home"),
+        back: props.goBack,
         right: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "top-actions", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "icon-button", onClick: () => props.go("works"), children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "folderOpen", size: 17 }) }) })
       }
     ),
@@ -25315,7 +25494,18 @@ function DesignPage(props) {
         "\u65B0\u5EFA\u4F1A\u8BDD"
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "result-feed", children: props.tasks.map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TaskBlock, { task, openDetail: props.openDetail, fillPrompt: props.fillPrompt, startGeneration: props.startGeneration }, task.id)) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "result-feed", children: props.tasks.map((task) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      TaskBlock,
+      {
+        task,
+        focused: props.focusTaskId === task.id,
+        onFocusEnd: props.clearFocusTask,
+        openDetail: props.openDetail,
+        fillPrompt: props.fillPrompt,
+        startGeneration: props.startGeneration
+      },
+      task.id
+    )) }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "sticky-composer", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       Composer,
       {
@@ -25333,44 +25523,60 @@ function DesignPage(props) {
 }
 function TaskBlock({
   task,
+  focused,
+  onFocusEnd,
   openDetail,
   fillPrompt,
   startGeneration
 }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("article", { className: "task-block", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: "task-title", onClick: () => fillPrompt(task.prompt), title: "\u8F7B\u70B9\u586B\u5165\u8F93\u5165\u6846", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: task.title }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "copy", size: 14 })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "meta-row", children: [
-      task.hasReference && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MiniRef, {}),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.model }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.ratio }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.resolution }),
-      task.duration && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.duration })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: task.media === "video" ? "result-strip video-strip" : "result-strip", children: task.media === "video" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: "result-tile video", onClick: () => openDetail(task), children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MiniArtwork, { tone: "purple", play: true }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.status === "running" ? "\u751F\u6210\u4E2D..." : "AI\u89C6\u9891" })
-    ] }) : [0, 1, 2, 3].map((index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: `result-tile ${index === 1 && task.status === "running" ? "running" : ""} ${index === 3 && task.status === "success" ? "failed" : ""}`, onClick: () => openDetail(task), children: [
-      index === 1 && task.status === "running" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "loader", className: "spin", size: 18 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MiniArtwork, { tone: index === 3 ? "gray" : "blue" }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: index === 3 && task.status === "success" ? "\u751F\u6210\u5931\u8D25" : index === 1 && task.status === "running" ? "\u751F\u6210\u4E2D..." : "AI\u751F\u6210" })
-    ] }, index)) }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "task-actions", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { onClick: () => fillPrompt(task.prompt), children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "eraser", size: 15 }),
-        "\u91CD\u65B0\u7F16\u8F91"
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { onClick: startGeneration, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "refresh", size: 15 }),
-        "\u518D\u6B21\u751F\u6210"
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "download", size: 15 }),
-        "\u5168\u90E8\u4E0B\u8F7D"
-      ] })
-    ] })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+    "article",
+    {
+      className: focused ? "task-block focused" : "task-block",
+      ref: (node) => {
+        if (node && focused) {
+          window.setTimeout(() => {
+            node.scrollIntoView({ behavior: "smooth", block: "start" });
+            window.setTimeout(() => onFocusEnd?.(), 1200);
+          }, 80);
+        }
+      },
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: "task-title", onClick: () => fillPrompt(task.prompt), title: "\u8F7B\u70B9\u586B\u5165\u8F93\u5165\u6846", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: task.title }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "copy", size: 14 })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "meta-row", children: [
+          task.hasReference && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MiniRef, {}),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.model }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.ratio }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.resolution }),
+          task.duration && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.duration })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: task.media === "video" ? "result-strip video-strip" : "result-strip", children: task.media === "video" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: `result-tile video ${task.status === "failed" ? "failed" : ""} ${task.status === "running" ? "running" : ""}`, onClick: () => openDetail(task), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MiniArtwork, { tone: "purple", play: true }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.status === "failed" ? "\u751F\u6210\u5931\u8D25" : task.status === "running" ? "\u751F\u6210\u4E2D..." : "AI\u89C6\u9891" })
+        ] }) : [0, 1, 2, 3].map((index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: `result-tile ${index === 1 && task.status === "running" ? "running" : ""} ${task.status === "failed" || index === 3 && task.status === "success" ? "failed" : ""}`, onClick: () => openDetail(task), children: [
+          index === 1 && task.status === "running" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "loader", className: "spin", size: 18 }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MiniArtwork, { tone: task.status === "failed" || index === 3 ? "gray" : "blue" }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: task.status === "failed" ? "\u4EFB\u52A1\u5931\u8D25" : index === 3 && task.status === "success" ? "\u751F\u6210\u5931\u8D25" : index === 1 && task.status === "running" ? "\u751F\u6210\u4E2D..." : "AI\u751F\u6210" })
+        ] }, index)) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "task-actions", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { onClick: () => fillPrompt(task.prompt), children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "eraser", size: 15 }),
+            "\u91CD\u65B0\u7F16\u8F91"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { onClick: startGeneration, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "refresh", size: 15 }),
+            "\u518D\u6B21\u751F\u6210"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "download", size: 15 }),
+            "\u5168\u90E8\u4E0B\u8F7D"
+          ] })
+        ] })
+      ]
+    }
+  );
 }
 function MinePage({ go }) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "page with-nav", children: [
@@ -25511,13 +25717,20 @@ function DetailMetaRow({ label, value }) {
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: value })
   ] });
 }
-function BillingPage({ goBack }) {
-  const rows = [
-    { title: "\u56FE\u7247\u751F\u6210", body: "\u4EFB\u52A1\u6210\u529F \xB7 FD+3.0 \xB7 -2 \u70B9", status: "\u6210\u529F" },
-    { title: "\u89C6\u9891\u751F\u6210", body: "\u4EFB\u52A1\u6210\u529F \xB7 Seedance 2.0 \xB7 -12 \u70B9", status: "\u6210\u529F" },
-    { title: "\u5931\u8D25\u4EFB\u52A1", body: "\u4EFB\u52A1\u5931\u8D25 \xB7 \u672A\u6263\u70B9 \xB7 \u5DF2\u9000\u56DE", status: "\u5931\u8D25" },
-    { title: "\u989D\u5EA6\u53D8\u66F4", body: "\u7BA1\u7406\u5458\u53D1\u653E \xB7 +500 \u70B9", status: "\u5165\u8D26" }
-  ];
+function BillingPage({
+  goBack,
+  filter,
+  setFilter,
+  records,
+  openRecord
+}) {
+  const visibleRecords = records.filter((record) => {
+    if (filter === "\u6210\u529F") return record.status === "\u6210\u529F";
+    if (filter === "\u5931\u8D25") return record.status === "\u5931\u8D25";
+    if (filter === "\u56FE\u7247") return record.media === "image";
+    if (filter === "\u89C6\u9891") return record.media === "video";
+    return true;
+  });
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "page billing-page", children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TopBar, { title: "\u751F\u6210\u8BB0\u5F55", back: goBack }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "balance-card", children: [
@@ -25525,15 +25738,23 @@ function BillingPage({ goBack }) {
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "1,280" }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u8FD1 7 \u5929\u6263\u70B9 38 \u70B9 \xB7 \u8FD1 30 \u5929\u6263\u70B9 216 \u70B9" })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "filter-row scrollable", children: ["\u5168\u90E8", "\u6210\u529F", "\u5931\u8D25", "\u56FE\u7247", "\u89C6\u9891"].map((item, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Chip, { label: item, active: index === 0 }, item)) }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "billing-list", children: rows.map((row) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: `billing-row ${row.status === "\u5931\u8D25" ? "failed" : ""}`, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: row.title }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("small", { children: row.body })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children: row.status }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "chevronRight", size: 18 })
-    ] }, `${row.title}-${row.body}`)) })
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "filter-row scrollable", children: ["\u5168\u90E8", "\u6210\u529F", "\u5931\u8D25", "\u56FE\u7247", "\u89C6\u9891"].map((item) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Chip, { label: item, active: filter === item, onClick: () => setFilter(item) }, item)) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "billing-list", children: visibleRecords.map((row) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      "button",
+      {
+        className: `billing-row ${row.status === "\u5931\u8D25" ? "failed" : ""}`,
+        onClick: () => openRecord(row.taskId),
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: row.title }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("small", { children: row.body })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children: row.status }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { name: "chevronRight", size: 18 })
+        ]
+      },
+      row.id
+    )) })
   ] });
 }
 function DrawerHost(props) {

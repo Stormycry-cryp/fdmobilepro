@@ -1,5 +1,13 @@
 # Changelog
 
+## fd-mobile-v0.2.3 - 2026-05-28
+
+- Deepened the second-floor mobile interaction layout to better match the provided reference: larger carousel cards, lower visual center, shared composer, and tighter bottom spacing.
+- Unified the logged-in page backgrounds with the login-page purple-blue gradient across home, second floor, design, mine, works, details, and generation records.
+- Fixed desktop gesture direction so dragging down from home enters the second floor and dragging up from the second floor returns home.
+- Removed the second-floor search/tutorial icon entry points and kept the second floor focused on category, preview, and composer interaction.
+- Refreshed the single-file `standalone.html` artifact with inline CSS and JavaScript.
+
 ## fd-mobile-v0.2.2 - 2026-05-28
 
 - Changed home category rail taps to jump into the second-floor category view after selecting the category.
