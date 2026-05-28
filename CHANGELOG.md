@@ -1,5 +1,11 @@
 # Changelog
 
+## fd-mobile-v0.2.2 - 2026-05-28
+
+- Changed home category rail taps to jump into the second-floor category view after selecting the category.
+- Made the login/register button match the phone input width.
+- Moved the login button and agreement row lower, and centered the agreement copy.
+
 ## fd-mobile-v0.2.1 - 2026-05-28
 
 - Fixed the design page composer so it stays pinned at the bottom top layer while only the result feed scrolls underneath it.

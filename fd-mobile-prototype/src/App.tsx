@@ -787,7 +787,15 @@ function HomePage(props: {
   return (
     <div className="page with-nav">
       <TopBar title="今天想做什么？" />
-      <CategoryRail active={props.activeCategory} setActive={props.setActiveCategory} onMore={() => props.go("loft")} />
+      <CategoryRail
+        active={props.activeCategory}
+        setActive={props.setActiveCategory}
+        jumpOnSelect={(category) => {
+          props.setActiveCategory(category);
+          props.go("loft");
+        }}
+        onMore={() => props.go("loft")}
+      />
       <div className="home-composer-wrap">
         <Composer
           value={props.prompt}
@@ -865,15 +873,21 @@ function CategoryRail({
   active,
   setActive,
   onMore,
+  jumpOnSelect,
 }: {
   active: string;
   setActive: (category: string) => void;
   onMore: () => void;
+  jumpOnSelect?: (category: string) => void;
 }) {
   return (
     <div className="category-rail">
       {templateCategories.slice(0, 5).map(category => (
-        <button key={category} className={active === category ? "category active" : "category"} onClick={() => setActive(category)}>
+        <button
+          key={category}
+          className={active === category ? "category active" : "category"}
+          onClick={() => jumpOnSelect ? jumpOnSelect(category) : setActive(category)}
+        >
           {category.replace("精修", "")}
         </button>
       ))}

@@ -25212,7 +25212,18 @@ function GuidePage({ go }) {
 function HomePage(props) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "page with-nav", children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TopBar, { title: "\u4ECA\u5929\u60F3\u505A\u4EC0\u4E48\uFF1F" }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CategoryRail, { active: props.activeCategory, setActive: props.setActiveCategory, onMore: () => props.go("loft") }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      CategoryRail,
+      {
+        active: props.activeCategory,
+        setActive: props.setActiveCategory,
+        jumpOnSelect: (category) => {
+          props.setActiveCategory(category);
+          props.go("loft");
+        },
+        onMore: () => props.go("loft")
+      }
+    ),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "home-composer-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       Composer,
       {
@@ -25271,10 +25282,19 @@ function LoftPage(props) {
 function CategoryRail({
   active,
   setActive,
-  onMore
+  onMore,
+  jumpOnSelect
 }) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "category-rail", children: [
-    templateCategories.slice(0, 5).map((category) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: active === category ? "category active" : "category", onClick: () => setActive(category), children: category.replace("\u7CBE\u4FEE", "") }, category)),
+    templateCategories.slice(0, 5).map((category) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "button",
+      {
+        className: active === category ? "category active" : "category",
+        onClick: () => jumpOnSelect ? jumpOnSelect(category) : setActive(category),
+        children: category.replace("\u7CBE\u4FEE", "")
+      },
+      category
+    )),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "category", onClick: onMore, children: "\u66F4\u591A" })
   ] });
 }

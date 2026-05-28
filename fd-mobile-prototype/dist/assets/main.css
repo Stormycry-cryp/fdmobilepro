@@ -1252,6 +1252,10 @@ button {
   font-size: 12px;
   line-height: 1.5;
 }
+.login-panel .primary-button {
+  width: 100%;
+  margin-top: 6px;
+}
 .brand-lockup {
   position: absolute;
   left: 50%;
@@ -2542,6 +2546,15 @@ textarea:focus-visible {
   border-radius: 17px;
   background: rgba(255, 255, 255, 0.82);
   box-shadow: var(--shadow-soft);
+}
+.login-panel .primary-button {
+  width: 100%;
+  margin-top: 20px;
+}
+.login-panel .agreement {
+  margin-top: 22px;
+  justify-content: center;
+  text-align: center;
 }
 .primary-button,
 .secondary-button {
