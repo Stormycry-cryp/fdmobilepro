@@ -2,6 +2,7 @@
   "name": "fd-mobile-prototype",
   "private": true,
   "version": "0.0.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build": "tsc && esbuild src/main.tsx --bundle --outdir=dist/assets --format=esm --splitting --loader:.css=css --jsx=automatic",
